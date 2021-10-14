@@ -8,9 +8,10 @@ typedef struct Entity {
 	int attack;
 	bool isPlayer;
 	bool isAlive;
-
+	char *name;
 } Entity;
 
-// Entity *newEntity();
+Entity *newPlayer();
+Entity *newSlime(int num);
 
 #endif

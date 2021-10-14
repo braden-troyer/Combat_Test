@@ -1,49 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "entity.h"
+#include "funcs.h"
 
-Entity *newPlayer()
-{
-	Entity *tmp = malloc(sizeof(Entity));
-	tmp->hp = 10;
-	tmp->attack = 3;
-	tmp->isPlayer = true;
-	tmp->isAlive = true;	
-	return tmp;
-}
 
-Entity *newSlime(int num)
-{
-	Entity *tmp = malloc(num * sizeof(Entity));
-	
-	for (int i = 0; i < num; i++)	
-	{
-		(tmp + i)->hp = 5;
-		(tmp + i)->attack = 1;
-		(tmp + i)->isPlayer = false;
-		(tmp + i)->isAlive = true;
-	}
-
-	return tmp;
-}
-
-void attack(Entity *receiver, Entity *attacker)
-{
-	if (attacker->attack >= receiver->hp) {
-		receiver->hp = 0;
-		receiver->isAlive = false;
-	}
-	else
-		receiver->hp -= attacker->attack;
-}
-
-void copyEntity(Entity *receiver, Entity *origin, int size)
-{
-	for (int i = 0; i < size; i++, receiver++, origin++)
-	{
-		*receiver = *origin;
-	}
-}
 
 int main()
 {
@@ -51,51 +11,74 @@ int main()
 	int ent_num = 2;
 	Entity *e_list = newSlime(ent_num);
 
-	Entity *tmp = malloc(2 * sizeof(Entity));
+	Entity *tmp;
+	int tmp_num;
 	
-	Board main_board = malloc(sizeof(Board));
-	main_board->friendly_list = player
-
-	main_board->enemy_list = e_list;
-	main_board->ent_num = &ent_num;	
+	int enemy_hp;
 	
 	int choice;
-
-	for (int i = 0; i < ent_num; i++)
-	{
-		main_board->enemy_hp += (e_list + i);
-	}
-
-	printf("Starting HPs are:\n\tPlayer: %d\n\tE1: %d\n\tE2: %d\n", player->hp, e_list[0].hp, e_list[1].hp);
-	printf("Starting Attacks are:\n\tPlayer: %d\n\tE1: %d\n\tE2: %d\n", player->attack, e_list[0].attack, e_list[1].attack);
 
 	bool combatIsOver = false;
 
 	while (!combatIsOver)
 	{
-		/*
-		(tmp + 1)->hp = 3;
-		copyEntity(tmp, e_list, ent_num);	
 
-		attack(e_list, player);
-		 
-		printf("Current HPs are:\n\tPlayer: %d\n\tE1: %d\n\tE2: %d\n", player->hp, e_list[0].hp, e_list[1].hp);
-	
-		printf("Prev HPs are:\n\tPlayer: %d\n\tE1: %d\n\tE2: %d\n", player->hp, tmp[0].hp, tmp[1].hp);
+		printf("Current HPs are:\n\tPlayer: %d\n", player->hp);
 
-		combatIsOver = true;
-		*/
+		for (int i = 0; i < ent_num; i++)
+			printf("\t%s: %d\n", (e_list + i)->name, (e_list + i)->hp);
+
+		printf("\n");
+
 
 		// Player choose
-		printf("Your HP: %d\n\n\tWho do want to attack?\n\t 1. Slime\n\t 2. Slime\nEnter a number here: ", player->hp);
-		scanf("%d", &choice);
-			
-		// Enemy Choose
+		printf("Your HP: %d\n\n\tWho do want to attack?\n", player->hp);
 		
+		for (int i = 0; i < ent_num; i++)
+			printf("\t %d. %s\n", i + 1, (e_list + i)->name);
+		printf("Enter a number here: ");
+		scanf("%d", &choice);
+
+		while (choice < 0 || choice > ent_num)
+		{
+			printf("Invalid choice, please try again: ");
+			scanf("%d", &choice);
+		}
+		attack((e_list + choice - 1), player);
+
+
+		// Enemy Choose
+		for (int i = 0; i < ent_num; i++)
+			if ((e_list + i)->isAlive)
+				attack(player, (e_list + i));
+
+
 		// Damage
+		enemy_hp = 0;
+		for (int i = 0; i < ent_num; i++)
+			enemy_hp += (e_list + i)->hp;
+
+
+		// Update the enemy list
+		tmp_num = 0;
+		tmp = malloc(sizeof(Entity) * ent_num);
+		for (int i = 0; i < ent_num; i++)
+			if ((e_list + i)->isAlive)
+			{
+				*(tmp + tmp_num) = *(e_list + i);
+				tmp_num++;
+			}
+		ent_num = tmp_num;
+		free(e_list);
+		e_list = malloc(sizeof(Entity) * tmp_num);
+		for (int i = 0; i < tmp_num; i++)
+			*(e_list + i) = *(tmp + i);
+
+		free(tmp);
+
 		
 		// IsOver update
-		if (player->hp == 0 || main_board->enemy_hp == 0)
+		if (player->hp == 0 || enemy_hp == 0)
 		{
 			printf("Combat has ended\n");
 			combatIsOver = true;
@@ -105,8 +88,6 @@ int main()
 
 	free(player);
 	free(e_list);
-	free(tmp);
-	// free(main_board);
 	
 
 	return 0;
