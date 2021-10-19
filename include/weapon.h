@@ -9,19 +9,6 @@ typedef struct {
     int attack;
 } Weapon;
 
-
-int i = 0;
-
-
-Weapon *newShortsword()
-{
-    Weapon *tmp = malloc(sizeof(Weapon));
-
-    tmp->name = malloc(sizeof(char) * 20);
-    strcpy(tmp->name, "Shortsword");
-    tmp->attack = 5;
-
-    return tmp;
-}
+Weapon *newShortsword();
 
 #endif

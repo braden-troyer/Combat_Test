@@ -7,7 +7,10 @@
 
 int main()
 {
+	// Friendly Entity Area
 	Entity *player = newPlayer();
+	
+	// Enemy list area
 	int ent_num = 2;
 	Entity *e_list = newSlime(ent_num);
 
