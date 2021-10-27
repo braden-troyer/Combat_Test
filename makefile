@@ -19,7 +19,8 @@ $(ODIR)/entity.o : $(SDIR)/entity.c $(IDIR)/entity.h
 $(ODIR)/funcs.o : $(SDIR)/funcs.c $(IDIR)/funcs.h $(IDIR)/entity.h
 	$(CC) -c -o $@ $(SDIR)/funcs.c $(CFLAGS)
 
-$(ODIR)/weapon.o : $(SDIR)/weapon.h
+$(ODIR)/weapon.o : $(SDIR)/weapon.c $(IDIR)/weapon.h
+	$(CC) -c -o $@ $(SDIR)/weapon.c $(CFLAGS)
 
 .PHONY: clean
 clean :
